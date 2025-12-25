@@ -1,0 +1,29 @@
+.blinkit-dot {
+  width: 20px;
+  height: 20px;
+  background: #1e90ff;
+  border-radius: 50%;
+  position: relative;   /* IMPORTANT */
+}
+
+.blinkit-dot .pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  background: rgba(30, 144, 255, 0.4);
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(5);
+    opacity: 0;
+  }
+}

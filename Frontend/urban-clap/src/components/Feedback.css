@@ -1,0 +1,161 @@
+.reviews-wrapper {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  padding: 20px 0;
+  background: #fff;
+}
+
+/* Fade Shadows */
+.fade-left,
+.fade-right {
+  position: absolute;
+  top: 0;
+  width: 80px;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.fade-left {
+  left: 0;
+  background: linear-gradient(to right, white, transparent);
+}
+
+.fade-right {
+  right: 0;
+  background: linear-gradient(to left, white, transparent);
+}
+
+/* Infinite Scroll Rows */
+.scroll-row {
+  width: max-content;
+  gap: 15px;
+  animation: scroll 52s linear infinite;
+}
+
+.scroll-row.reverse {
+  animation: scrollReverse 52s linear infinite;
+}
+
+.scroll-content {
+  width: 100%;
+  display: flex;
+  gap: 15px;
+}
+
+/* Card Styling */
+.review-card {
+  background: rgb(191, 246, 212);
+  padding: 16px;
+  border-radius: 16px;
+  width: 280px;
+  height: auto;
+  display: block;
+  overflow: hidden;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f1f1f1;
+  flex-shrink: 0;
+}
+
+.profile {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.profile img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.text {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #444;
+  line-height: 1.4;
+}
+
+@media (min-width: 640px) {
+  .reviews-wrapper {
+    padding: 30px 0;
+  }
+  
+  .fade-left,
+  .fade-right {
+    width: 150px;
+  }
+  
+  .scroll-row {
+    gap: 20px;
+  }
+  
+  .scroll-content {
+    gap: 20px;
+  }
+  
+  .review-card {
+    padding: 18px;
+    border-radius: 18px;
+    width: 320px;
+  }
+  
+  .profile img {
+    width: 44px;
+    height: 44px;
+  }
+  
+  .text {
+    font-size: 13px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .reviews-wrapper {
+    padding: 40px 0;
+  }
+  
+  .fade-left,
+  .fade-right {
+    width: 220px;
+  }
+  
+  .scroll-row {
+    gap: 25px;
+  }
+  
+  .scroll-content {
+    gap: 26px;
+  }
+  
+  .review-card {
+    padding: 22px;
+    border-radius: 20px;
+    width: 350px;
+  }
+  
+  .profile {
+    gap: 12px;
+  }
+  
+  .profile img {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .text {
+    margin-top: 12px;
+    font-size: 14px;
+  }
+}
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes scrollReverse {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
