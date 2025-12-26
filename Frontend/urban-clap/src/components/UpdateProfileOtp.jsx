@@ -52,16 +52,16 @@ const UpdateProfileOtp = () => {
         otp: otpString,
         phone: phone,
       });
-      console.log(res);
-      setuser(res.data.data);
+      
+      console.log("MY DATA ..........",res);
       email = res.data.data.email;
       setloading(false);
-      
+      console.log("STATUS ....",res.data.status)
       if (res.data.status === 200) {
-        navigate("/home", { replace: true });
+        navigate("/login", { replace: true });
       }
 
-      alert("Profile Updated Successfully");
+      alert("Profile Updated Successfully , Please Login to Continue");
     } catch (error) {
       const status = error?.response?.status || 500;
   setServerError(status);

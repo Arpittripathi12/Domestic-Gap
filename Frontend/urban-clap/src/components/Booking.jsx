@@ -338,10 +338,11 @@ useEffect(() => {
 
   // Determine if we should show the map
   const showMap = trackingBooking && userPos && providerPos;
-  console.log("TRACKING ",trackingBooking);
+  console.log("TRACKING ", trackingBooking);
   console.log("USER POS", userPos);
   console.log("PROVIDER POS", providerPos);
-  console.log("SHOW MAP",showMap);
+  console.log("SHOW MAP", showMap);
+  console.log("Route coords:", routeCoords);
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
       {/* Header */}
@@ -421,19 +422,26 @@ useEffect(() => {
             </div>
 
             {/* Map Container */}
-            <div className="bg-gray-100 rounded-lg h-96 flex items-center justify-center border-2 border-dashed border-gray-300 relative overflow-hidden">
+            <div className="bg-gray-100 rounded-lg h-86 flex items-center justify-center border-2 border-dashed border-gray-300 relative overflow-hidden">
               {showMap ? (
-                <MapView
-                  center={providerPos}
-                  route={routeCoords}
-                  providerPos={providerPos}
-                  userPos={userPos}
-                />
+                <div className="w-full h-full">
+                  <MapView
+                    center={providerPos}
+                    route={routeCoords}
+                    providerPos={providerPos}
+                    userPos={userPos}
+                  />
+                </div>
               ) : (
                 <div className="text-center">
                   <CircularProgress size={40} className="text-green-600 mb-4" />
                   <p className="text-gray-700 font-medium">Waiting for provider location...</p>
                   <p className="text-gray-500 text-sm">Map will appear when provider shares location</p>
+                  <div className="mt-4 text-xs text-gray-400">
+                    <p>Tracking: {trackingBooking ? '✓' : '✗'}</p>
+                    <p>User Position: {userPos ? '✓' : '✗'}</p>
+                    <p>Provider Position: {providerPos ? '✓' : '✗'}</p>
+                  </div>
                 </div>
               )}
             </div>
@@ -451,7 +459,7 @@ useEffect(() => {
                 <p className="text-2xl font-bold text-blue-700">
                   {etaMin > 0 ? `${etaMin} min` : "-"}
                 </p>
-              </div>
+                  </div>
               <div className="bg-purple-50 p-4 rounded-lg">
                 <p className="text-sm text-gray-600 mb-1">Status</p>
                 <p className="font-semibold text-gray-800">
