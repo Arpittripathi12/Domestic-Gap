@@ -2,12 +2,12 @@ const nodemailer = require("nodemailer");
 require("dotenv").config();
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
+  host: "smtp-relay.brevo.com",
   port: 587,
   secure: false, // TLS
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS, // APP PASSWORD
+    user: process.env.BREVO_USER,
+    pass: process.env.BREVO_API_KEY, // APP PASSWORD
   },
 });
 
@@ -34,7 +34,7 @@ const sendOtpToEmail = async (email, otp) => {
   `;
 
   await transporter.sendMail({
-    from: `Domestic-Gap <${process.env.EMAIL_USER}>`,
+    from: "Domestic-Gap <1061arpittripathi@gmail.com>",
     to: email,
     subject: "Your Domestic-Gap Verification Code",
     html,
