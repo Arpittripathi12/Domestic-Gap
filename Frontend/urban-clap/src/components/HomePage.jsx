@@ -47,13 +47,13 @@ const HomePage = () => {
     </div>
     
     {/* MAIN CENTER TEXT + SEARCH */}
-    <div className="flex flex-col items-center text-center  max-w-3xl mx-auto px-4 mt-2 sm:mt-10 md:mt-16
+    <div className="flex flex-col items-center text-center  max-w-3xl mx-auto px-4 mt-1 sm:mt-10 md:mt-16
 ">      
-      <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+      <div className="text-2xl sm:text-4xl md:text-5xl lg:text-7xl font-bold leading-tight mb-6 lg:mt-0 mt-10">
         India's 10 minute <br /> House Help Service Corner
       </div>
 
-      <div className="text-base sm:text-lg md:text-xl px-2 mb-8 mt-2">
+      <div className="text-base sm:text-lg md:text-xl px-2 mb-8  mt-2">
         We live in the parts of Gurugram, Noida, Bengaluru & ❤️
       </div> 
 
