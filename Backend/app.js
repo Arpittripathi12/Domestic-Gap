@@ -26,7 +26,9 @@ const io = new Server(server, {
 require("./sockets/socket.js")(io);
 
 app.use(cors({
-    origin:"http://localhost:5173",
+    origin: ["http://localhost:5173",
+      "https://domestic-gap.vercel.app"
+    ],
     credentials:true,
 }));    
 app.use(express.json())
