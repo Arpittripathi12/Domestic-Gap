@@ -61,11 +61,11 @@ const verifyOtp = async (req, res) => {
         });
         // generate jwt token
         const token = generateToken(user._id);
-        res.cookie("auth_token", token, {
-          httpOnly: true,
-          secure: false,
-          sameSite: "lax",
-        });
+       res.cookie("auth_token", token, {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",      // must be true in production (HTTPS)
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // cross-site cookies
+})
         return response(res, 200, "Verified-Successfully", { token, user });
       } else {
         return response(res, 401, "Incorrect Otp");
@@ -173,10 +173,10 @@ const updateProfile = async (req, res) => {
 
     const token = generateToken(user._id);
     res.cookie("auth_token", token, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-    });
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",      // must be true in production (HTTPS)
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // cross-site cookies
+})
     await user.save();
 
     return response(res, 200, "Profile Updated Successfully", user);
@@ -199,10 +199,10 @@ const login = async (req, res) => {
       if (match) {
         const token = generateToken(user._id);
         res.cookie("auth_token", token, {
-          httpOnly: true,
-          secure: false,
-          sameSite: "lax",
-        });
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",      // must be true in production (HTTPS)
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // cross-site cookies
+})
         return response(res, 200, "Login Successfull", {
           role: user.role,
           user,
@@ -247,7 +247,12 @@ const updateCurrentLocation = async (req, res) => {
 
 const logout = async (req, res) => {
   try {
-    res.cookie("auth_token", "", { expires: new Date(0) });
+res.cookie("auth_token", "", {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  expires: new Date(0)
+});
     return response(res, 200, "Logged out Successfully");
   } catch (error) {
     console.error(error);
