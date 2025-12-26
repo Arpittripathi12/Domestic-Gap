@@ -31,7 +31,7 @@ const Provider = () => {
   const [isHovered, setIsHovered] = useState(false);
   const controls = useAnimation();
   const [todayEarnings, setTodayEarnings] = useState(0);
-
+ const [activejobs,setActiveJobs]=useState(0);
 
 
   // ḤANDLE ALLOW LOCATION
@@ -93,24 +93,44 @@ const handleAllowLocation = async () => {
   }
 };
 
-// useEffect(() => {
-//   handleAllowLocation();
-// }, []);
+useEffect(() => {
+  handleAllowLocation();
+  
+}, []);
 
 // ← FIX: Empty array, not empty object
-// useEffect(() => {
-//   const timer = setTimeout(() => {
-//     const allowed = window.confirm(
-//       "Allow location access to get nearby jobs?"
-//     );
+useEffect(() => {
+  const timer = setTimeout(() => {
+    const allowed = window.confirm(
+      "Allow location access to get nearby jobs?"
+    );
 
-//     if (allowed) {
-//       handleAllowLocation();
-//     }
-//   }, 10000);
+    if (allowed) {
+      handleAllowLocation();
+    }
+  }, 10000);
 
-//   return () => clearTimeout(timer);
-// }, []);
+  return () => clearTimeout(timer);
+}, []);
+
+
+
+useEffect(() => {
+  const ActiveJobs = async () => {
+    try {
+      const res = await axiosInstance.get("/api/provider/my-jobs");
+      const totaljobs = res.data.data;
+     const activeJobs= totaljobs.filter(job=>job.status==="pending");
+     setActiveJobs(activeJobs.length)
+      console.log("API Response FOR ACTIVE JOBS :", activeJobs);
+    } catch (error) {
+      console.error("Error fetching active jobs:", error);
+    }
+  };
+
+  ActiveJobs();
+}, []);
+
 
 
 const toggleAvalability = async () => {
@@ -424,7 +444,7 @@ useEffect(() => {
                   transition={{ duration: 1.5, repeat: Infinity }}
                   className="bg-green-400 text-green-900 px-2 py-1 rounded-full text-xs font-bold"
                 >
-                  12 New
+                  {activejobs} New
                 </motion.span>
               </motion.div>
 

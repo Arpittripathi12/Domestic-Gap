@@ -141,7 +141,7 @@ const updateProfile = async (req, res) => {
   try {
     const { firstName, lastName, phone, newpassword, otp } = req.body;
     const userId = req.userId;
-
+    console.log("OTP IS ...........",otp)
     user = await User.findById(userId);
     if (!user) {
       return response(res, 404, "User not found");
@@ -151,7 +151,7 @@ const updateProfile = async (req, res) => {
     if (!toverify) {
       return response(res, 404, "OTP not found");
     }
-
+    
     if (toverify.otp !== otp) {
       return response(res, 401, "Incorrect OTP");
     }

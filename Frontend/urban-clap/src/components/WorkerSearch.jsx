@@ -118,12 +118,12 @@ price: predictWorkerBasePrice({
               lng: lng,
             });
 
-            // if (pos.coords.accuracy > 200) {
-            //   alert(
-            //     "Location not accurate. Please select from Saved Addresses."
-            //   );
-            //   return;
-            // }
+            if (pos.coords.accuracy > 200) {
+              alert(
+                "Location not accurate. Please select from Saved Addresses."
+              );
+              return;
+            }
 
             setUserLocation({ lat, lng });
             console.log("Current location:", lat, lng);
@@ -132,7 +132,7 @@ price: predictWorkerBasePrice({
             setShowLocationModal(false);
 
             // Fetch nearby workers
-            await fetchNearbyWorkers(27.406513, 80.123192);
+            await fetchNearbyWorkers(lat, lng);
             console.log(lat, lng);
           } catch (error) {
             console.error("Error updating location:", error);

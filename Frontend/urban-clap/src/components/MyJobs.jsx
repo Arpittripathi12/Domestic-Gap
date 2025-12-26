@@ -27,6 +27,8 @@ const ProviderJobUI = () => {
   const [completedJobs, setCompletedJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [track, settrack] = useState(false);
+  const [workTimer, setWorkTimer] = useState({ minutes: 0, seconds: 0 });
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [routeCoords, setRouteCoords] = useState([]);
   const [providerPos, setproviderPos] = useState({
     lng: 80.128108,
@@ -300,6 +302,8 @@ const ProviderJobUI = () => {
       console.log("START WORK RESPONSE: ", response);
 
       setJobStatus("in_progress");
+      setWorkTimer({ minutes: 0, seconds: 0 }); // Reset timer to 0
+      setIsTimerRunning(true); // Start the timer
       updateJobInActiveList("in_progress");
     } catch (error) {
       console.log("Something Went Wrong ", error);
@@ -310,12 +314,62 @@ const ProviderJobUI = () => {
   const HandleTracking = async () => {
     settrack(true);
   };
+
+  // Timer effect for work progress
+  useEffect(() => {
+    let interval = null;
+    if (isTimerRunning && jobStatus === "in_progress") {
+      interval = setInterval(() => {
+        setWorkTimer(prev => {
+          const newSeconds = prev.seconds + 1;
+          if (newSeconds >= 60) {
+            return {
+              minutes: prev.minutes + 1,
+              seconds: 0
+            };
+          }
+          return {
+            ...prev,
+            seconds: newSeconds
+          };
+        });
+      }, 1000);
+    } else {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [isTimerRunning, jobStatus]);
+
+  // Format timer display
+  const formatTimer = (minutes, seconds) => {
+    const hrs = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  // Calculate extra charges based on work time
+  const calculateExtraCharges = () => {
+    const totalMinutes = workTimer.minutes;
+    if (totalMinutes <= 60) return 0;
+    
+    const extraMinutes = totalMinutes - 60;
+    const extraHalfHours = Math.ceil(extraMinutes / 30);
+    return extraHalfHours * 49;
+  };
+
+  // Get total amount including extra charges
+  const getTotalAmount = () => {
+    const basePrice = parseInt(selectedJob?.estimatedPrice?.replace('₹', '') || '0');
+    const extraCharges = calculateExtraCharges();
+    return basePrice + extraCharges;
+  };
  
   const handleCompleteWork = async () => {
     try {
       if (!selectedJob) return;
 
       setJobStatus("completed");
+      setIsTimerRunning(false); // Stop the timer
       updateJobInActiveList("completed");
     } catch (error) {
       console.log("Something Went Wrong ", error);
@@ -331,20 +385,51 @@ const onLocationUpdate = useCallback(
   (location) => {
     setproviderPos(location);
     
-    if (!selectedJobRef.current) return; // ✅ check selectedJob instead
-    console.log("SELECTED REF  ",selectedJobRef.current.id)
-    console.log("SELECTED JOB ",selectedJob.rawData.bookingId)
+    if (!selectedJobRef.current || !userPos) return;
+    
+    // Calculate distance between provider and user
+    const calculateDistance = (lat1, lng1, lat2, lng2) => {
+      const toRad = (x) => (x * Math.PI) / 180;
+      const R = 6371; // km
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lng2 - lng1);
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    };
+    
+    const calculatedDistance = calculateDistance(
+      location.lat, location.lng,
+      userPos.lat, userPos.lng
+    );
+    
+    // Estimate ETA (assuming average speed of 30 km/h)
+    const calculatedETA = Math.round((calculatedDistance / 30) * 60); // minutes
+    
+    console.log("SELECTED REF  ", selectedJobRef.current.id);
+    console.log("SELECTED JOB ", selectedJob.rawData.bookingId);
+    
+    // Debug the values being sent
+    console.log("📡 Sending payload with:");
+    console.log("  - providerPos:", location);
+    console.log("  - userPos:", userPos);
+    console.log("  - calculatedDistance:", calculatedDistance);
+    console.log("  - calculatedETA:", calculatedETA);
+    console.log("  - routeCoords:", routeCoords);
+    
     socket.emit("provider-location", {
-      bookingId: selectedJob.rawData.bookingId, // ✅ use job id
+      bookingId: selectedJob.rawData.bookingId,
       payload: {
         providerPos: location,
-        routeCoords,
-        distanceKm,
-        etaMin,
+        routeCoords: routeCoords || [],
+        distanceKm: calculatedDistance,
+        etaMin: calculatedETA,
       },
     });
   },
-  [routeCoords, distanceKm, etaMin]
+  [routeCoords, selectedJob, userPos]
 );
 
 useLiveLocation(onLocationUpdate);
@@ -586,7 +671,7 @@ useLiveLocation(onLocationUpdate);
                 Work in Progress
               </p>
               <p className="text-3xl font-bold text-orange-600 mt-2">
-                00:15:32
+                {formatTimer(workTimer.minutes, workTimer.seconds)}
               </p>
               <p className="text-sm text-gray-600 mt-1">Timer running</p>
             </div>
@@ -610,12 +695,18 @@ useLiveLocation(onLocationUpdate);
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Extra Charges:</span>
-                  <span className="font-semibold">₹0</span>
+                  <span className="font-semibold">₹{calculateExtraCharges()}</span>
                 </div>
+                {calculateExtraCharges() > 0 && (
+                  <div className="text-xs text-gray-500 mt-1">
+                    Work time: {Math.floor(workTimer.minutes / 60)}h {workTimer.minutes % 60}m
+                    (₹49 per 30min after 1 hour)
+                  </div>
+                )}
                 <div className="flex justify-between text-lg font-bold border-t border-green-200 pt-2 mt-2">
                   <span>Total Amount:</span>
                   <span className="text-green-600">
-                    {selectedJob.estimatedPrice}
+                    ₹{getTotalAmount()}
                   </span>
                 </div>
                 <div className="flex items-center justify-between mt-3 pt-3 border-t border-green-200">
