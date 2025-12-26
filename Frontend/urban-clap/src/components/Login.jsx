@@ -81,7 +81,7 @@ const Login = () => {
 
     setloading(true);
     try {
-      const res = await axiosInstance.post("http://localhost:8000/api/auth/login", {
+      const res = await axiosInstance.post("/api/auth/login", {
         email: formData.email,
         password: formData.password,
       });

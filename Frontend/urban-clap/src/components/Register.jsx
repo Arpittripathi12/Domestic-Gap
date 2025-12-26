@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Eye, EyeOff } from "lucide-react";
 import axios from "axios";
+import axiosInstance from "../axiosInstance";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -103,7 +104,7 @@ const Register = () => {
 
     setloading(true);
     try {
-      const res = await axios.post("http://localhost:8000/api/auth/send-otp", {
+      const res = await axiosInstance.post("/api/auth/send-otp", {
         email: formData.email,
       });
       setloading(false);

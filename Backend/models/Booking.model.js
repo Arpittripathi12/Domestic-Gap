@@ -140,7 +140,6 @@ const BookingSchema = new mongoose.Schema(
 BookingSchema.index({ "serviceAddress.location": "2dsphere" });
 BookingSchema.index({ userId: 1, status: 1 });
 BookingSchema.index({ providerId: 1, status: 1 });
-BookingSchema.index({ bookingId: 1 });
 BookingSchema.index({ status: 1, scheduledDate: 1 });
 BookingSchema.index({ category: 1, status: 1 });
 
