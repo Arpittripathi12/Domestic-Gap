@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import axios from "axios";
+import axiosInstance from "../axiosInstance";
 const VerifyOtp = () => {
   const location = useLocation();
  const navigate = useNavigate();
@@ -45,7 +46,7 @@ const handleVerify = async (e) => {
   
   try {
  
-    const res = await axios.post("http://localhost:8000/api/auth/verify-otp", {
+    const res = await axiosInstance.post("/api/auth/verify-otp", {
       email: email,
       firstName: firstName,
       lastName: lastName,

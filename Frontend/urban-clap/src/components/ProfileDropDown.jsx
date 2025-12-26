@@ -30,7 +30,7 @@ const { user: loginUser,setUser } = useAuth();
       },[isProfileOpen])
 
   const handlelogout=async ()=>{
-    const res= await axios.get("http://localhost:8000/api/auth/logout")
+    const res= await axiosInstance.get("/api/auth/logout")
 
     setUser(null);
 

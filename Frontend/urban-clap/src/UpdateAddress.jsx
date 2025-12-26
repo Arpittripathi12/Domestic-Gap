@@ -76,8 +76,8 @@ export default function UpdateAddress() {
     const { lat, lng } = location;
 
     try {
-      const res = await axios.post(
-        "http://localhost:8000/api/auth/location/reverse",
+      const res = await axiosInstance.post(
+        "/api/auth/location/reverse",
         { lat, lng }
       );
       console.log(res);
