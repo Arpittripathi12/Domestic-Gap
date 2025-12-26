@@ -16,15 +16,31 @@ router.put("/updateprofile-data",authMiddleware,authController.updateProfile);
 router.post("/location/update",authMiddleware,authController.updateCurrentLocation);
 router.get("/getmybookings",authMiddleware,authController.getMyBookings);
 router.post("/cancelbooking",authMiddleware,authController.cancelbooking);
-router.post("/location/reverse",async (req, res) => {
-  const { lat, lng } = req.body;
+router.post("/location/reverse", async (req, res) => {
+  try {
+    const { lat, lng } = req.body;
 
-  const response = await fetch(
-    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
-   
-  );
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
+      {
+        headers: {
+          "User-Agent": "DomesticGapApp/1.0(contact@domesticgap.com)",
+          "Accept": "application/json",
+        },
+      }
+    );
 
-  const data = await response.json();
-  res.json(data);
+    if (!response.ok) {
+      throw new Error(`Nominatim error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    res.json(data);
+
+  } catch (error) {
+    console.error("Reverse geocoding error:", error.message);
+    res.status(500).json({ error: "Reverse geocoding failed" });
+  }
 });
+
 module.exports=router;  
