@@ -1,24 +1,7 @@
-const nodemailer=require('nodemailer');
 const dotenv=require('dotenv');
+const {Resend}=require('resend');
 dotenv.config();
-const {EMAIL_USER,EMAIL_PASS}=process.env;
-
-const transporter=nodemailer.createTransport({
-    service:'Gmail',
-    auth:{
-            user:process.env.EMAIL_USER,
-            pass:process.env.EMAIL_PASS,
-    }
-
-})
-
-transporter.verify((error,success)=>{ 
-    if(error){
-        console.error('Gmail services connection failed',error)
-    }else{
-        console.log('Email service is ready to take messages');
-    }
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const sendOtpToEmail=async(email,otp)=>{
     const html = `
@@ -45,12 +28,19 @@ const sendOtpToEmail=async(email,otp)=>{
     </div>
   `;
 
-  await transporter.sendMail({
-    from:`Domestic-Gap <${process.env.EMAIL_USER}`,
-    to:email,
-    subject:'Your Domestic-Gap Verification Code',
-    html,
+  try {
+    const response = await resend.emails.send({
+      from: "DomesticGap Support <onboarding@resend.dev>",
+      to: email,
+      subject: "Your Domestic-Gap Verification Code",
+      html,
+    });
 
-  })
+    console.log("Resend response:", response); // 👈 VERY IMPORTANT
+  } catch (error) {
+    console.error("Resend error:", error); // 👈 VERY IMPORTANT
+    throw error;
+  }
+
 }
 module.exports=sendOtpToEmail;
