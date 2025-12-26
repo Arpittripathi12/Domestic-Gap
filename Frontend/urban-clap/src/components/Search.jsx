@@ -63,7 +63,7 @@ const ServiceSearch = () => {
   const matchedServices = searchServices(searchQuery);
 
   return (
-    <div className="z-100">
+    <div className="z-100 mb-15">
        <div className="relative">
       <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5" />
       

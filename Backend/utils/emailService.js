@@ -1,46 +1,44 @@
-const dotenv=require('dotenv');
-const {Resend}=require('resend');
-dotenv.config();
-const resend = new Resend(process.env.RESEND_API_KEY);
+const nodemailer = require("nodemailer");
+require("dotenv").config();
 
-const sendOtpToEmail=async(email,otp)=>{
-    const html = `
-    <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
-      <h2 style="color: #075e54;">🔐 Domestic-Gap Verification</h2>
-      
-      <p>Hi there,</p>
-      
-      <p>Your one-time password (OTP) to verify your Domestic-Gap account is:</p>
-      
-      <h1 style="background: #e0f7fa; color: #000; padding: 10px 20px; display: inline-block; border-radius: 5px; letter-spacing: 2px;">
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // TLS
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS, // APP PASSWORD
+  },
+});
+
+transporter.verify((error, success) => {
+  if (error) {
+    console.error("❌ Gmail connection failed:", error);
+  } else {
+    console.log("✅ Email service is ready");
+  }
+});
+
+const sendOtpToEmail = async (email, otp) => {
+  const html = `
+    <div style="font-family: Arial, sans-serif; color: #333;">
+      <h2 style="color:#075e54;">🔐 Domestic-Gap Verification</h2>
+      <p>Your OTP is:</p>
+      <h1 style="background:#e0f7fa;padding:10px 20px;display:inline-block;">
         ${otp}
       </h1>
-
-      <p><strong>This OTP is valid for the next 5 minutes.</strong> Please do not share this code with anyone.</p>
-
-      <p>If you didn’t request this OTP, please ignore this email.</p>
-
-      <p style="margin-top: 20px;">Thanks & Regards,<br/>Domestic-Gap Security Team</p>
-
-      <hr style="margin: 30px 0;" />
-
-      <small style="color: #777;">This is an automated message. Please do not reply.</small>
+      <p><strong>Valid for 5 minutes.</strong></p>
+      <p>Do not share this code.</p>
+      <p>— Domestic-Gap Security Team</p>
     </div>
   `;
 
-  try {
-    const response = await resend.emails.send({
-      from: "DomesticGap Support <onboarding@resend.dev>",
-      to: email,
-      subject: "Your Domestic-Gap Verification Code",
-      html,
-    });
+  await transporter.sendMail({
+    from: `Domestic-Gap <${process.env.EMAIL_USER}>`,
+    to: email,
+    subject: "Your Domestic-Gap Verification Code",
+    html,
+  });
+};
 
-    console.log("Resend response:", response); // 👈 VERY IMPORTANT
-  } catch (error) {
-    console.error("Resend error:", error); // 👈 VERY IMPORTANT
-    throw error;
-  }
-
-}
-module.exports=sendOtpToEmail;
+module.exports = sendOtpToEmail;
