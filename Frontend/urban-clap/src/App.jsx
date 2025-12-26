@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import Register from "./components/Register";
 import "./App.css";
 import RegisterAnimation from "./components/RegisterAnimation";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route ,Navigate} from "react-router-dom";
 import VerifyOtp from "./components/VerifyOtp";
 import HomePage from "./components/HomePage";
 import BookingsPage from "./components/Booking";
@@ -19,6 +19,7 @@ import CompleteWorkerProfile from "./components/CompleteWorkerProfile"
 import ProviderJobsDashboard from "./components/MyJobs";
 import ConfirmBooking from "./components/ConfirmBooking";
 import BookingDetails from "./components/ConfirmBooking";
+
 function App() {
   return (
     <>
@@ -26,6 +27,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             {/* 🔓 Public Routes */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
             <Route element={<RegisterAnimation />}>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
