@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,Link } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Eye, EyeOff } from "lucide-react";
 import axios from "axios";
@@ -178,6 +178,7 @@ const Login = () => {
             >
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
+            
           </div>
         </div>
 
@@ -202,6 +203,15 @@ const Login = () => {
             "Login"
           )}
         </button>
+        <div className="mt-4 text-center  text-gray-600 text-bold">
+      <span>Not a member? </span>
+      <Link
+        to="/register"
+        className="text-blue-600 font-medium hover:text-blue-700 no-underline "
+      >
+        Register
+      </Link>
+    </div>
       </form>
     </>
   );

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,Link } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Eye, EyeOff } from "lucide-react";
 import axios from "axios";
@@ -220,8 +220,8 @@ const Register = () => {
           </div>
         </div>
         
-        <div className="mb-3">
-          <label className="block mb-1">Select Role</label>
+        <div className="mb-3 mt-3">
+          {/* <label className="block mb-1">Select Role</label> */}
           <select
             className={`form-select custom-select w-full ${
               errors.role ? "border-red-500 border-2" : ""
@@ -263,6 +263,15 @@ const Register = () => {
             "Register"
           )}
         </button>
+        <div className="mt-4 text-center  text-gray-600 text-bold">
+      <span>Already a member? </span>
+      <Link
+        to="/login"
+        className="text-blue-600 font-medium hover:text-blue-700 no-underline "
+      >
+        Login
+      </Link>
+    </div>
       </form>
     </>
   );
