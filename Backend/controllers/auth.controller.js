@@ -6,6 +6,7 @@ const OTP = require("../models/Otp.model");
 const bcrypt = require("bcrypt");
 const generateToken = require("../utils/Generatetoken");
 const Booking = require("../models/Booking.model");
+const upload = require("../middlewares/upload");
 const sendOtp = async (req, res) => {
 const { email } = req.body;
 
@@ -317,6 +318,23 @@ const cancelbooking=async(req,res)=>{
   }
 }
 
+const uploadProfilePicture=async(req,res)=>{
+    const userId=req.user._id;
+
+  try {
+    const imageUrl=req.file.path;
+    const user=await User.findByIdAndUpdate(
+       userId,
+       {profileImage:imageUrl},
+       {new:true}
+    );
+    return response(res,200,"Profile Picture Updated Successfully",imageUrl);
+  } catch (error) {
+    console.error(error);
+    return response(res,500,"Internal Server Error");
+  }
+}
+
 module.exports = {
   cancelbooking,
   sendOtp,
@@ -329,4 +347,5 @@ module.exports = {
   updateProfile,
   updateCurrentLocation,
   getMyBookings,
+  uploadProfilePicture,
 };

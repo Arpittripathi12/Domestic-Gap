@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -29,6 +30,13 @@ const VerifyOtp = () => {
       inputRefs.current[index + 1].focus();
     }
   };
+  useEffect(() => {
+    email && console.log("EMAIL IN OTP PAGE ........", email);
+    firstName && console.log("FIRST NAME IN OTP PAGE ........", firstName);
+    lastName && console.log("LAST NAME IN OTP PAGE ........", lastName);
+    password && console.log("PASSWORD IN OTP PAGE .......,",password);
+    role && console.log("ROLE IN OTP PAGE ........", role);
+  }, []);
 
   const handleKeyDown = (e, index) => {
     
@@ -56,14 +64,15 @@ const handleVerify = async (e) => {
     });
 
     setloading(false);
-     console.log(res);
+     console.log("RESPONSE FROM REGISTER:",res);
     
 
     if(role==="user" &&res.data.status===200){
-          navigate("/login", { replace: true });
+      console.log("Navigating to /home");
+          navigate("/home ", { replace: true });
     }
     else if(role==="provider"&&res.data.status===200){
-       navigate("/login", { replace: true });
+       navigate("/provider  ", { replace: true });
     }
     
   } catch (error) {
@@ -116,7 +125,7 @@ const handleVerify = async (e) => {
         <button
           type="submit"
           
-          className="btn  w-full bg-gradient-to-br from-green-400 to-blue-500 "
+          className="btn  w-full bg-gradient-to-br from-green-400 to-blue-500 mb-3"
         >
           {loading?(<CircularProgress size={20} color="inherit"/>):("Verify")}
         

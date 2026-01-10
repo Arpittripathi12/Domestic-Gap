@@ -28,7 +28,7 @@ const UpdateProfile = () => {
     lastName: loginuser.lastName,
     email: loginuser.email,
     phone:  loginuser.phone,
-    profileImage: null
+    profileImage: loginuser.profileImage
   });
 
   useEffect(() => {
@@ -53,7 +53,9 @@ const UpdateProfile = () => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+    console.log("UPLOADED FILE:",file);
     if (file) {
+
       setProfileImage(file);
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -76,6 +78,7 @@ const UpdateProfile = () => {
             lastName: formData.lastName,
             password: formData.password,
             phone:formData.phone,
+            profileImage:profileImage
           },
         });
       } else if(res.data.status===300) {
@@ -102,6 +105,9 @@ const UpdateProfile = () => {
   }
 
   return (
+    <>
+    
+    {loginuser ?
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
       {/* Header with Profile */}
       <motion.div 
@@ -170,9 +176,8 @@ const UpdateProfile = () => {
                     </div>
                   )}
                 </motion.div>
-               <motion.button
+               <div
   type="button"
-  whileTap={{ scale: 0.9 }}
   onClick={() => fileInputRef.current?.click()}
   className="
     absolute bottom-0 right-0
@@ -181,12 +186,12 @@ const UpdateProfile = () => {
     flex items-center justify-center
     rounded-full
     shadow-lg
-    transition-all
+  
     z-50
   "
 >
   <Camera className="w-4 h-4" />
-</motion.button>
+</div>
 
 
                 <input
@@ -312,6 +317,25 @@ const UpdateProfile = () => {
         </motion.div>
       </div>
     </div>
+        :<div>
+          <button
+          type='submit'
+          className='
+          w-full
+          bg-green-600
+          hover:bg-green-700
+          text-white
+          font-bold
+          rounded-lg
+          transition-all
+          shadow-md
+          hover:shadow-lg
+          '
+          >
+            Login
+          </button>
+          </div>}
+        </>
   );
 };
 

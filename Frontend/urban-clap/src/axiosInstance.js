@@ -1,7 +1,9 @@
 import axios from "axios";
 const API = import.meta.env.VITE_API_BASE_URL;
+const mode=import.meta.env.MODE;
+const BASEURL=mode==="development"?"http://localhost:8000":API;
 const axiosInstance = axios.create({
-  baseURL: API,
+  baseURL: BASEURL,
   withCredentials: true, // 🔥 REQUIRED FOR COOKIES
 });
 

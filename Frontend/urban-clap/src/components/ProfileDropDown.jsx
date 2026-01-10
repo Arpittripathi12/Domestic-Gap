@@ -66,15 +66,15 @@ const { user: loginUser,setUser } = useAuth();
               whileTap={{ scale: 0.95 }}
             >
              
-              {user.image ? (
+              {loginUser.profileImage ? (
                 <img 
-                  src={user.image} 
+                  src={loginUser.profileImage} 
                   alt="Profile" 
                   className="w-12 h-12 rounded-full object-cover"
                 />
               ) : (
                 <div className="w-10 sm:w-12 h-10 sm:h-12 rounded-full bg-green-600 p-0 flex items-center justify-center text-white font-bold text-sm sm:text-lg">
-                  {user.name.charAt(0)}
+                  {loginUser.firstName.charAt(0)}
                 </div>
               )}
             </motion.button>
@@ -98,19 +98,19 @@ const { user: loginUser,setUser } = useAuth();
                       {/* User Info Section */}
                       <div className="p-3 sm:p-4 bg-gradient-to-br from-green-50 to-green-100 border-b">
                         <div className="flex items-center gap-2 sm:gap-3">
-                          {user.image ? (
+                          {loginUser.profileImage ? (
                             <img 
-                              src={user.image} 
+                              src={loginUser.profileImage} 
                               alt="Profile" 
                               className="w-12 sm:w-14 h-12 sm:h-14 rounded-full object-cover border-2 border-green-600"
                             />
                           ) : (
                             <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-full bg-green-600 flex items-center justify-center text-white font-bold text-lg sm:text-xl">
-                              {user.name.charAt(0)}
+                              { loginUser.firstName.charAt(0)}
                             </div>
                           )}
                           <div className="flex-1">
-                            <h3 className="font-bold text-black text-sm sm:text-base">{user.name}</h3>
+                            <h3 className="font-bold text-black text-sm sm:text-base">{loginUser.firstName}</h3>
                             <p className="text-xs sm:text-sm text-gray-600">{user.email}</p>
                           </div>
                         </div>

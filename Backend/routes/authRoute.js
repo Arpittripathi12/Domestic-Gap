@@ -2,6 +2,7 @@ const express=require("express");
 const authController=require("../controllers/auth.controller");
 const authMiddleware=require("../middlewares/authmiddleware");
 const serviceController=require("../controllers/service.controller");
+const upload=require("../middlewares/upload");
 const router=express.Router();
 
 
@@ -11,6 +12,7 @@ router.put('/update-address',authMiddleware,authController.updateAddress);
 router.post("/login",authController.login);
 router.get("/logout",authController.logout);
 router.get("/me", authMiddleware,authController.globaluser);
+router.post("/upload-profile",authMiddleware,upload.single("profileImage"),authController.uploadProfilePicture)
 router.get("/updateprofile-otp",authMiddleware,authController.updateProfileOtp);
 router.put("/updateprofile-data",authMiddleware,authController.updateProfile);
 router.post("/location/update",authMiddleware,authController.updateCurrentLocation);

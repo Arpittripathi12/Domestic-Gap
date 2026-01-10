@@ -50,6 +50,9 @@ const UserSchema = new mongoose.Schema(
       default: "user",
       required: true,
     },
+    profileImage:{
+      type:String,
+    }
   },
   { timestamps: true }
 );

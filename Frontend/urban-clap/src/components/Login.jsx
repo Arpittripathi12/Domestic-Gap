@@ -99,7 +99,7 @@ const Login = () => {
               user:res.data.data.user,
              
             },
-          });
+          }); 
         } else if (res.data.data.role === "provider") {
          
           navigate("/provider", {

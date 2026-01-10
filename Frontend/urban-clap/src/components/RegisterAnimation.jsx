@@ -67,7 +67,7 @@ const RegisterAnimation = () => {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="bg-white/95 backdrop-blur-xl rounded-2xl max-w-lg shadow-2xl drop-shadow-2xl px-5 py-4 m-6 border border-white/20 hover:shadow-green-300/30 hover:bg-white/98 transition-all duration-500 hover:scale-[1.02] relative z-10"
+            className="bg-white/95 backdrop-blur-xl rounded-2xl max-w-lg shadow-2xl drop-shadow-2xl px-5 py-2 m-6 border border-white/20 hover:shadow-green-300/30 hover:bg-white/98 transition-all duration-500 hover:scale-[1.02] relative z-10"
           >
             {/* Show ONLY Register on /register */}
             <Outlet/>

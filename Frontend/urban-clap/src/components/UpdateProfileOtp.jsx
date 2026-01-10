@@ -3,6 +3,7 @@ import { useState, useRef } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useAuth } from "./AuthContext";
 import axiosInstance from "../axiosInstance";
+import { useEffect } from "react";
 const UpdateProfileOtp = () => {
   const { setuser } = useAuth();
   const location = useLocation();
@@ -13,7 +14,7 @@ const UpdateProfileOtp = () => {
     return null;
   }
   let email;
-  const { phone, firstName, lastName, password } = location.state;
+  const { phone, firstName, lastName, password,profileImage} = location.state;
   const [loading, setloading] = useState(false);
   const length = 6;
   const [otp, setOtp] = useState(Array(length).fill(""));
@@ -32,6 +33,10 @@ const UpdateProfileOtp = () => {
     }
   };
 
+  useEffect(()=>{
+    profileImage && console.log("PROFILE IMAGE IN OTP PAGE ........",profileImage);
+  },[])
+
   const handleKeyDown = (e, index) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1].focus();
@@ -43,7 +48,7 @@ const UpdateProfileOtp = () => {
     setloading(true);
 
     const otpString = otp.join("");
-
+    
     try {
       const res = await axiosInstance.put("api/auth/updateprofile-data", {
         firstName: firstName,
@@ -52,6 +57,26 @@ const UpdateProfileOtp = () => {
         otp: otpString,
         phone: phone,
       });
+      if (res.status === 200 && profileImage) {
+
+    const formData = new FormData();
+    formData.append("profileImage", profileImage);
+
+    const res2 = await axiosInstance.post(
+      "/api/auth/upload-profile",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    console.log("IMAGE UPLOAD SUCCESS:", res2.data);
+  }
+  else{
+    console.log("NO PROFILE IMAGE TO UPLOAD");
+  }
       
       console.log("MY DATA ..........",res);
       email = res.data.data.email;
