@@ -330,7 +330,7 @@ const uploadProfilePicture=async(req,res)=>{
     );
     return response(res,200,"Profile Picture Updated Successfully",imageUrl);
   } catch (error) {
-    console.error(error);
+    console.error("THE ERROR IN UPLOADING IMAGE ",error);
     return response(res,500,"Internal Server Error");
   }
 }
