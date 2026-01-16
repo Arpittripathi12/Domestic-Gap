@@ -1,4 +1,3 @@
-const { select } = require("framer-motion/client");
 const mongoose = require("mongoose");
 const UserSchema = new mongoose.Schema(
   {
