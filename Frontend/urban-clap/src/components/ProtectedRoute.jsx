@@ -8,9 +8,7 @@ const ProtectedRoute = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <CircularProgress size={80} color="inherit" />
-      </div>
+    <div>LOADING....</div>
     );
   }
 

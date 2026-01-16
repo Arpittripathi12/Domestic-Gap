@@ -46,9 +46,16 @@ const RegisterAnimation = () => {
             <div className="absolute bottom-32 left-20 w-6 h-6 border-2 border-emerald-200/40 rotate-12 animate-spin" style={{animationDuration: '6s'}}></div>
             <div className="absolute top-1/2 right-1/4 w-4 h-4 border border-white/50 rounded-full animate-pulse delay-900"></div>
           </div>
-          <div className="text-5xl  uppercase font-bold text-center mb-3">
-            DomestiC-Gap
-          </div>
+         
+
+  <div className="text-5xl uppercase font-bold text-center">
+    DomestiC-Gap
+  </div>
+
+  
+
+
+          
 
           <motion.div
             initial={{ opacity: 0, x: 100 }}

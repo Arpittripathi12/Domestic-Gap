@@ -7,6 +7,8 @@ const bcrypt = require("bcrypt");
 const generateToken = require("../utils/Generatetoken");
 const Booking = require("../models/Booking.model");
 const upload = require("../middlewares/upload");
+const {OAuth2Client}=require("google-auth-library")
+const axios =require("axios");
 const sendOtp = async (req, res) => {
 const { email } = req.body;
 
@@ -59,6 +61,9 @@ const verifyOtp = async (req, res) => {
           lastName: lastName || "",
           password: hashedPassword,
           role: role,
+          authProvider:{
+            local:true,
+          }
         });
         // generate jwt token
         const token = generateToken(user._id);
@@ -193,10 +198,16 @@ const login = async (req, res) => {
   if (email && password) {
     try {
       user = await User.findOne({ email });
+
       if (!user) {
         return response(res, 401, "Email does not exist");
       }
+      if(user.authProvider.local===false){
+        user.set('authProvider.local',true);
+        await user.save();
+      }
       const match = await bcrypt.compare(password, user.password);
+
       if (match) {
         const token = generateToken(user._id);
         res.cookie("auth_token", token, {
@@ -334,8 +345,123 @@ const uploadProfilePicture=async(req,res)=>{
     return response(res,500,"Internal Server Error");
   }
 }
+const client=new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
+// const googleSignIn=async(req,res)=>{
+//   try {
+//     const {idToken,role}=req.body;
+//     if(!role){
+//       return response(res,400,"Role is Required");
+//     }
+//     const ticket= await client.verifyIdToken({
+//       idToken,  
+//       audience:process.env.GOOGLE_CLIENT_ID,
+//     });
+//     const payload=ticket.getPayload();
+//     const {email,given_name,family_name,profileImage}=payload;
+
+//     let user= await User.findOne({email});
+
+
+//     if(!user){
+//       user=await User.create({
+//         firstName:given_name,
+//         lastName:family_name,
+//         email:email,
+//         profileImage:profileImage,
+//         role,
+//         authProvider:"google",
+//       });
+//       console.log("NEW USER CREATED VIA GOOGLE SIGN IN",user);
+//     }
+
+//     const token=generateToken(user._id);
+//     res.cookie("auth_token", token, {
+//       httpOnly: true,
+//       secure: process.env.NODE_ENV === "production",      // must be true in production (HTTPS)
+//       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // cross-site cookies
+//     })
+//     return response(res,200,"Google Login Successfull",user)
+
+//   } catch (error) {
+//     console.error(error);
+//     return response(res,500,"Google Sign-In Failed");
+//   }
+// }
+
+const googleSignIn=async(req,res)=>{
+  try {
+    const {accessToken,role}=req.body;
+    if(!accessToken){
+      return response(res,400,"Access Token Missing");
+    }
+   
+    // GET USER INFO
+    const googleRes=await axios.get(
+      "https://www.googleapis.com/oauth2/v3/userinfo",
+      {
+        headers:{
+          Authorization:`Bearer ${accessToken}`
+        }
+      }
+    );
+
+    const {email,name,profileImage,sub}=googleRes.data;
+
+    let user =await User.findOne({email});
+    if(user){
+      console.log("EXISTING USER LOGGING IN VIA GOOGLE SIGN IN",user);  
+      const token=generateToken(user._id);
+      res.cookie("auth_token",token,{
+        secure:process.env.NODE_ENV==="production",
+        httpOnly:true,
+        sameSite:process.env.NODE_ENV==="production" ? "none" : "lax",
+      });
+     console.log("TOKEN",token);
+
+      if(user.authProvider?.google===false){
+      user.set('authProvider.google',true);
+      await user.save();
+      }
+      return response(res,200,"GOOGLE LOGIN SUCCESSFULL",user);
+    }
+    
+   if(!role){
+      return response(res,400,"Role is required for signup");
+    }
+    const fullName=name?.trim()||"";
+    const [firstName,...lastNameParts]=fullName.split(" ");
+    const lastName=lastNameParts.join(" ")||null;
+   
+    
+
+
+      user=await User.create({
+        email,
+        firstName:firstName,
+        lastName:lastName,
+        profileImage,
+        googleId : sub,
+        role,
+        authProvider:{
+          google:true
+        }
+      })
+    console.log("NEW USER CREATED VIA GOOGLE SIGN IN",user);
+    const token=generateToken(user._id);
+    res.cookie("auth_token",token,{
+      secure:process.env.NODE_ENV==="production",
+      httpOnly:true,
+      sameSite:process.env.NODE_ENV==="production" ? "none" : "lax",
+    })
+    return response(res,201,"Signup successfull",user);
+  } catch (error) {
+    console.error(error);
+    return response(res,500,"Google Sign in Failed")
+  }
+}
 module.exports = {
+  googleSignIn,
   cancelbooking,
   sendOtp,
   verifyOtp,
