@@ -3,10 +3,14 @@ import { useNavigate,Link } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Eye, EyeOff } from "lucide-react";
 import axios from "axios";
+import {useGoogleLogin} from "@react-oauth/google";
 import axiosInstance from "../axiosInstance";
+import { useAuth } from "./AuthContext";
+import googleimage  from "../assets/google.png";
 
 const Register = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate();   
+  const {setUser}=useAuth();
 
   const [formData, setformData] = useState({
     firstName: "",
@@ -24,6 +28,7 @@ const Register = () => {
   });
   
   const [loading, setloading] = useState(false);
+  const [googleloading, setgoogleloading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   let [serverError, setServerError] = useState(null);
 
@@ -83,6 +88,38 @@ const Register = () => {
     }
   };
 
+
+  const handleGoogleLogin=async(response)=>{
+    setgoogleloading(true);
+    try {
+      
+      const res=await axiosInstance.post("/api/auth/google",{
+        accessToken:response.access_token,
+        // idToken:response.credential,
+        role:formData.role,
+      })
+      setUser(res.data.data);
+      setgoogleloading(false);
+      if(formData.role==="provider"){
+        navigate("/provider/");
+      }
+      else{
+        navigate("/home");
+      }
+      
+      console.log("RESPONSE FROM GOOGLE SIGN IN",res);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+   
+    const login=useGoogleLogin({
+      
+    onSuccess:handleGoogleLogin,
+    onError: () => {
+    console.log("Google Sign In was unsuccessful. Try again later");
+  },
+  })
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -107,6 +144,8 @@ const Register = () => {
       const res = await axiosInstance.post("/api/auth/send-otp", {
         email: formData.email,
       });
+
+
       setloading(false);
     
 
@@ -220,10 +259,10 @@ const Register = () => {
           </div>
         </div>
         
-        <div className="mb-3 mt-3">
+        <div className="mb-3 mt-3 ">
           {/* <label className="block mb-1">Select Role</label> */}
           <select
-            className={`form-select custom-select w-full ${
+            className={`form-select custom-select w-48 truncate ${
               errors.role ? "border-red-500 border-2" : ""
             }`}
             onChange={handleChange}
@@ -242,6 +281,7 @@ const Register = () => {
           )}
         </div>
         
+
         <div className="mb-3 form-check">
           <input
             type="checkbox"
@@ -263,7 +303,41 @@ const Register = () => {
             "Register"
           )}
         </button>
-        <div className="mt-4 text-center  text-gray-600 text-bold">
+        {/* <div className="mt-4 text-center  text-gray-600 text-bold">
+      <span>Already a member? </span>
+      <Link
+        to="/login"
+        className="text-blue-600 font-medium hover:text-blue-700 no-underline "
+      >
+        Login
+      </Link>
+    </div> */}
+      <div className="text-center m-2">--- Or ---</div>
+     
+      <button
+      onClick={()=>{
+        if(formData.role===""){
+          setErrors({
+            role:"Please select a role to continue with Google Login",
+          })
+        }
+        else{
+        login();
+        }
+      }}
+          className="btn w-full bg-gradient-to-br  from-green-400 to-blue-500 text-white py-2 rounded mb-2"
+        >
+          {googleloading ? (
+            <CircularProgress size={20} color="inherit" />
+          ) : (
+            <div className="flex justify-center text-center">
+            <img src={googleimage} className="h-6 w-6 mr-5"></img>
+            <div className="">Sign Up With Google</div>
+            </div>
+          )}
+        </button>
+        
+         <div className="mt-1  text-center  text-gray-600 text-bold">
       <span>Already a member? </span>
       <Link
         to="/login"

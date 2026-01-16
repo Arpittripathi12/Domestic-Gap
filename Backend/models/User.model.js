@@ -1,3 +1,4 @@
+const { select } = require("framer-motion/client");
 const mongoose = require("mongoose");
 const UserSchema = new mongoose.Schema(
   {
@@ -9,20 +10,36 @@ const UserSchema = new mongoose.Schema(
       required: true,
       match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
     },
-    password: { type: String, required: true },
+    authProvider: {
+      type:{
+      local:{type:Boolean,default:false},
+      google: { type: Boolean, default: false }
+      },
+      default:{},
+    },
+    password: {
+      type: String,
+      required: function () {
+        return this.authProvider?.local===true;
+      },
+      
+    },
+
+    googleId:{
+      type:String,
+      unique:true,
+    },
 
     phone: { type: String },
     currentLocation: {
-  type: {
-    type: String,
-    enum: ["Point"],
-    
-  },
-  coordinates: {
-    type: [Number],
-    
-  },
-},
+      type: {
+        type: String,
+        enum: ["Point"],
+      },
+      coordinates: {
+        type: [Number],
+      },
+    },
 
     addresses: [
       {
@@ -50,9 +67,9 @@ const UserSchema = new mongoose.Schema(
       default: "user",
       required: true,
     },
-    profileImage:{
-      type:String,
-    }
+    profileImage: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

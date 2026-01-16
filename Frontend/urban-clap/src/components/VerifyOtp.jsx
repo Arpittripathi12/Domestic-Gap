@@ -4,8 +4,10 @@ import { useState, useRef } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import axios from "axios";
 import axiosInstance from "../axiosInstance";
+import { useAuth } from './AuthContext';
 const VerifyOtp = () => {
   const location = useLocation();
+  const {setUser}=useAuth();
  const navigate = useNavigate();
   if (!location.state) {
     navigate("/register", { replace: true });
@@ -62,7 +64,7 @@ const handleVerify = async (e) => {
       password: password,
       otp: otpString  // Send as string, not array
     });
-
+    setUser(res.data.data);
     setloading(false);
      console.log("RESPONSE FROM REGISTER:",res);
     

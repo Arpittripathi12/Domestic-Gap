@@ -45,4 +45,6 @@ router.post("/location/reverse", async (req, res) => {
   }
 });
 
+router.post("/google",authController.googleSignIn);
+
 module.exports=router;  
