@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { User, Briefcase, Star, CheckCircle, XCircle, Clock, ArrowRight, Package, Ban } from 'lucide-react';
 import axiosInstance from '../axiosInstance';
+import { showsuccess,showerror } from '../react-toastify';
 // Stats Dashboard Component
 function StatsDashboard({ stats, onNavigate }) {
   return (
@@ -262,11 +263,11 @@ function ProviderProfile({ profile, setProfile }) {
       setProfile(res.data.data);
       setLoading(false);
       setIsEditing(false);
-      alert('Profile updated successfully!');
+      showsuccess('Profile updated successfully!');
     } catch (error) {
       console.error("Failed to update profile", error);
       setLoading(false);
-      alert('Failed to update profile. Please try again.');
+      showerror('Failed to update profile. Please try again.');
     }
   };
 

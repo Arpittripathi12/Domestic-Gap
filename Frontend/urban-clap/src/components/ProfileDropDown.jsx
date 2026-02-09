@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom"
 import  {useAuth} from "./AuthContext"
 import axiosInstance from "../axiosInstance"
 import { Profiler } from "react"
+import { showerror,showinfo } from "../react-toastify"
 
 const ProfileDropDown=()=>{
 const { user: loginUser,setUser } = useAuth();
@@ -33,11 +34,10 @@ const { user: loginUser,setUser } = useAuth();
     const res= await axiosInstance.get("/api/auth/logout")
 
     setUser(null);
-
+    showerror("Logout Successfully");
     
     navigate("/login",{replace:true})
 
-    alert("Logout Successfully")
   }
   
  const  user= {
@@ -48,6 +48,7 @@ const { user: loginUser,setUser } = useAuth();
   };
 
  return <>
+
  <div className="fixed  right-6 z-100  " ref={profileRef}>
           
             <motion.button
@@ -203,7 +204,7 @@ const { user: loginUser,setUser } = useAuth();
                           icon={<HelpCircle className="w-5 h-5" />}
                           label="Help & Support"
                           onClick={() => {
-                            alert("We are Coming Soon for Your Help 😊")
+                            showinfo("We are Coming Soon for Your Help 😊")
                             scrollToSection('Bookings');
                             setIsProfileOpen(false);
                           }}
@@ -215,8 +216,10 @@ const { user: loginUser,setUser } = useAuth();
                         <MenuItem 
                           icon={<LogOut className="w-5 h-5" />}
                           label="Logout"
-                         onClick={()=>handlelogout()
-
+                         onClick={()=>{
+                          handlelogout();
+                          
+                         }
                         }
                           className="text-red-600 hover:bg-red-100"
                         />

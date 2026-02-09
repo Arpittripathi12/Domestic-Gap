@@ -5,6 +5,7 @@ import ProfileDropDown from './ProfileDropDown';
 import axiosInstance from '../axiosInstance';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
+import { showsuccess, showerror } from '../react-toastify';
 
 const UpdateProfile = () => {
   const navigate=useNavigate();
@@ -82,13 +83,13 @@ const UpdateProfile = () => {
           },
         });
       } else if(res.data.status===300) {
-         alert("Email does not registerd with Domestic-Gap");
+         showerror("Email does not registerd with Domestic-Gap");
       }
       
       
     } catch (error) {
       console.error('Error updating profile:', error);
-      alert('Error updating profile');
+      showerror('Error updating profile');
     }
   };
 

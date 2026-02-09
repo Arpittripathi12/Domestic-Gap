@@ -17,6 +17,7 @@ import { useNavigate } from "react-router-dom";
 import MapView from "./Tracking/MapView";
 import useLiveLocation from "./Tracking/useLiveLocation";
 import socket from "./Tracking/socket";
+import { showsuccess,showerror,showinfo,showwarning } from "../react-toastify";
 const ProviderJobUI = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("new");
@@ -226,7 +227,7 @@ const ProviderJobUI = () => {
       setActiveTab("active");
     } catch (error) {
       console.log("Something Went Wrong ", error);
-      alert("Failed to accept job. Please try again.");
+      showerror("Failed to accept job. Please try again.");
     }
   };
 
@@ -241,10 +242,10 @@ const ProviderJobUI = () => {
       console.log("REJECT REQUEST: ", response);
 
       setNewJobs((prev) => prev.filter((j) => j.id !== jobId));
-      alert("Job rejected");
+      showinfo("Job rejected");
     } catch (error) {
       console.log("Something Went Wrong ", error);
-      alert("Failed to reject job. Please try again.");
+      showerror("Failed to reject job. Please try again.");
     }
   };
 
@@ -264,7 +265,7 @@ const ProviderJobUI = () => {
       updateJobInActiveList("ontheway");
     } catch (error) {
       console.log("Something Went Wrong ", error);
-      alert("Failed to update status. Please try again.");
+      showerror("Failed to update status. Please try again.");
     }
   };
 
@@ -284,7 +285,7 @@ const ProviderJobUI = () => {
       updateJobInActiveList("reached");
     } catch (error) {
       console.log("Something Went Wrong ", error);
-      alert("Failed to mark as reached. Please try again.");
+      showerror("Failed to mark as reached. Please try again.");
     }
   };
 
@@ -307,7 +308,7 @@ const ProviderJobUI = () => {
       updateJobInActiveList("in_progress");
     } catch (error) {
       console.log("Something Went Wrong ", error);
-      alert("Failed to start work. Please try again.");
+      showerror("Failed to start work. Please try again.");
     }
   };
 
@@ -373,7 +374,7 @@ const ProviderJobUI = () => {
       updateJobInActiveList("completed");
     } catch (error) {
       console.log("Something Went Wrong ", error);
-      alert("Failed to complete work. Please try again.");
+      showerror("Failed to complete work. Please try again.");
     }
   };
   useEffect(() => {
@@ -464,7 +465,7 @@ useLiveLocation(onLocationUpdate);
       // Remove from active jobs
       setActiveJobs((prev) => prev.filter((j) => j.id !== selectedJob.id));
 
-      alert("Payment confirmed! Job moved to completed jobs.");
+      showsuccess("Payment confirmed! Job moved to completed jobs.");
       setSelectedJob(null);
       setJobStatus("pending");
       setActiveTab("completed");

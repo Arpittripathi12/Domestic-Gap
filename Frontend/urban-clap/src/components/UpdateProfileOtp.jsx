@@ -4,6 +4,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { useAuth } from "./AuthContext";
 import axiosInstance from "../axiosInstance";
 import { useEffect } from "react";
+import { showsuccess, showerror } from "../react-toastify";
 const UpdateProfileOtp = () => {
   const { setuser } = useAuth();
   const location = useLocation();
@@ -86,7 +87,7 @@ const UpdateProfileOtp = () => {
         navigate("/login", { replace: true });
       }
 
-      alert("Profile Updated Successfully , Please Login to Continue");
+      showsuccess("Profile Updated Successfully , Please Login to Continue");
     } catch (error) {
       const status = error?.response?.status || 500;
   setServerError(status);

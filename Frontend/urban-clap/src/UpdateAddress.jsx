@@ -20,7 +20,7 @@ import axios from "axios";
 import axiosInstance from "./axiosInstance";
 import { CircularProgress } from "@mui/material";
 import { useAuth } from "./components/AuthContext";
-
+import { showinfo, showsuccess,showerror, showwarning } from "./react-toastify";
 export default function UpdateAddress() {
   const {user:loginuser}=useAuth();
   const addresses=loginuser?.addresses||[]
@@ -52,7 +52,7 @@ export default function UpdateAddress() {
     },
   });
    const deleteAddress=()=>{
-    alert("Delete Address feature coming soon!")
+    showinfo("Delete Address feature coming soon!")
    }
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -98,21 +98,21 @@ export default function UpdateAddress() {
       
       setLoading(false);
       setMapSelected(true);
-      alert("Location selected successfully!");
+      showsuccess("Location selected successfully!");
     } catch (error) {
       console.error("Reverse geocoding failed", error);
-      alert("Unable to fetch address details");
+      showerror("Unable to fetch address details");
     }
   };
 
   const addAddress = async () => {
     if (!mapSelected) {
-      alert("Please select location from map first!");
+      showwarning("Please select location from map first!");
       return;
     }
 
     if (!form.label || !form.street || !form.house) {
-      alert("Please fill all required fields!");
+      showwarning("Please fill all required fields!");
       return;
     }
     setLoading(true)
@@ -124,7 +124,7 @@ export default function UpdateAddress() {
       });
 
       console.log("Adding address:", form);
-      alert("Address Added Successfully!");
+      showsuccess("Address Added Successfully!");
       setLoading(false);
       // Reset form
       setForm({
@@ -141,7 +141,7 @@ export default function UpdateAddress() {
       setShowMapSelection(false);
     } catch (err) {
       console.error(err);
-      alert("Error adding address");
+      showerror("Error adding address");
     }
   };
 

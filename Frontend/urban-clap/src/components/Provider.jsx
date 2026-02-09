@@ -21,7 +21,7 @@ import {
 import ProfileDropDown from "./ProfileDropDown";
 import Footer from "./Footer";
 import { useNavigate } from "react-router-dom";
-
+import { showsuccess,showerror } from "../react-toastify";
 import axiosInstance from "../axiosInstance";
 const Provider = () => {
   const navigate = useNavigate();
@@ -37,7 +37,7 @@ const Provider = () => {
   // ḤANDLE ALLOW LOCATION
 const handleAllowLocation = async () => {
   if (!navigator.geolocation) {
-    alert("Geolocation is not supported");
+    showerror("Geolocation is not supported");
     return;
   }
 
@@ -88,7 +88,7 @@ const handleAllowLocation = async () => {
       console.log('Used IP location:', res);
     } catch (ipError) {
       console.error("IP location also failed:", ipError);
-      alert("Unable to get location. Please enable location permissions or enter manually.");
+      showerror("Unable to get location. Please enable location permissions or enter manually.");
     }
   }
 };
@@ -144,7 +144,7 @@ const toggleAvalability = async () => {
     console.log(res);
     setTodayEarnings(res.data.data.todayEarnings);
     if (res.data.success) {
-      alert("Your avaliability is updated");
+      showsuccess("Your avaliability is updated");
     }
 
   } catch (error) {

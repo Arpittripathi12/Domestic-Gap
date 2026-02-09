@@ -6,7 +6,7 @@ import axios from "axios";
 import axiosInstance from "../axiosInstance";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useAuth } from "./AuthContext";
-
+import { showerror,showsuccess } from "../react-toastify";
 const Login = () => {
   const navigate = useNavigate();
   const { setUser } = useAuth();
@@ -71,12 +71,14 @@ const Login = () => {
       setUser(res.data.data)
       if (res.data.status === 200) {
         if (res.data.data.role === "user") {
+          showsuccess("Logged in successfully");
           navigate("/home", {
             state: {
               user: res.data.data.user,
             },
           });
         } else if (res.data.data.role === "provider") {
+          showsuccess("Logged in successfully");
           navigate("/provider", {
             state: {
               email: formData.email,
@@ -86,6 +88,7 @@ const Login = () => {
           });
         }
       } else {
+        showerror("Login Failed");
         setServerError();
       }
       setgoogleloading(false);
@@ -128,12 +131,14 @@ const Login = () => {
       console.log(res);
       if (res.data.status === 200) {
         if (res.data.data.role === "user") {
+          showsuccess("Logged in successfully");
           navigate("/home", {
             state: {
               user: res.data.data.user,
             },
           });
         } else if (res.data.data.role === "provider") {
+           showsuccess("Logged in successfully");
           navigate("/provider", {
             state: {
               email: formData.email,
@@ -143,9 +148,11 @@ const Login = () => {
           });
         }
       } else {
+        showerror("Login failed");
         setServerError();
       }
     } catch (error) {
+      showerror("Login Failed")
       console.log(error.response.status);
       setServerError(error.response.status);
       setloading(false);

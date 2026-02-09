@@ -16,7 +16,7 @@ import ProfileDropDown from "./ProfileDropDown";
 import socket from "./Tracking/socket";
 import MapView from "./Tracking/MapView";
 import CircularProgress from "@mui/material/CircularProgress";
-
+import { showerror } from "../react-toastify";
 const BookingsPage = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -135,7 +135,7 @@ useEffect(() => {
   const handleTrackBooking = (booking) => {
     console.log("BOOKING STATUS .......",booking);
     if (!booking.coordinates) {
-      alert("Location data not available for this booking.");
+      showerror("Location data not available for this booking.");
       return;
     }
 

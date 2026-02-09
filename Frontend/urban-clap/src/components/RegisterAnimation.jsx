@@ -12,6 +12,7 @@ const RegisterAnimation = () => {
   return (
     <>
       <div className="flex">
+        
         <div className="md:w-1/2 w-0">
           <img
             src={sideimage}
@@ -19,7 +20,6 @@ const RegisterAnimation = () => {
             className="w-full h-full object-cover"
           />
         </div>
-
         <div className="md:w-1/2 w-full flex flex-col justify-center items-center min-h-screen bg-gradient-to-br from-green-400 via-emerald-500 to-blue-500 relative overflow-hidden">
           {/* Animated Background Elements */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">

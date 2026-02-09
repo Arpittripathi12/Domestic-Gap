@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 import axiosInstance from "../axiosInstance";
 import { predictWorkerBasePrice } from "../workerData";
-
+import { showsuccess,showerror, showwarning } from "../react-toastify";
 const getDistance = (lat1, lon1, lat2, lon2) => {
   const toRad = (x) => (x * Math.PI) / 180;
   const R = 6371; // km
@@ -96,7 +96,7 @@ price: predictWorkerBasePrice({
       }
     } catch (error) {
       console.error("Failed to load workers:", error);
-      alert("Failed to fetch nearby workers. Please try again.");
+      showerror("Failed to fetch nearby workers. Please try again.");
     } finally {
       setLoadingWorkers(false);
     }
@@ -119,7 +119,7 @@ price: predictWorkerBasePrice({
             });
 
             if (pos.coords.accuracy > 200) {
-              alert(
+              showwarning(
                 "Location not accurate. Please select from Saved Addresses."
               );
               return;
@@ -136,20 +136,20 @@ price: predictWorkerBasePrice({
             console.log(lat, lng);
           } catch (error) {
             console.error("Error updating location:", error);
-            alert("Failed to update location. Please try again.");
+            showerror("Failed to update location. Please try again.");
           } finally {
             setLoadingLocation(false);
           }
         },
         (error) => {
-          alert(
+          showwarning(
             "Location access denied. Please select a saved address or enable location access."
           );
           setLoadingLocation(false);
         }
       );
     } else {
-      alert("Geolocation is not supported by your browser.");
+      showerror("Geolocation is not supported by your browser.");
       setLoadingLocation(false);
     }
   };
@@ -176,7 +176,7 @@ price: predictWorkerBasePrice({
       await fetchNearbyWorkers(lat, lng);
     } catch (error) {
       console.error("Error updating location:", error);
-      alert("Failed to update location. Please try again.");
+      showerror("Failed to update location. Please try again.");
     } finally {
       setLoadingLocation(false);
     }

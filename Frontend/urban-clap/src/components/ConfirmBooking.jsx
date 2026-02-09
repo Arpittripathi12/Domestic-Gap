@@ -11,6 +11,7 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 import axiosInstance from "../axiosInstance";
+import { showerror, showwarning,showinfo } from "../react-toastify";
 
 const SuccessPopup = ({ onClose }) => {
   return (
@@ -114,31 +115,31 @@ const ConfirmBooking = () => {
               lng: lng,
             });
 
-            // if (pos.coords.accuracy > 200) {
-            //   alert(
-            //     "Location not accurate. Please select from Saved Addresses."
-            //   );
-            //   return;
-            // }
+            if (pos.coords.accuracy > 200) {
+              showinfo(
+                "Location not accurate. Please select from Saved Addresses."
+              );
+              return;
+            }
             CurrentLocation.location.coordinates=[lat,lng]
             console.log("Current location:", lat,lng);
 
           } catch (error) {
             console.error("Error updating location:", error);
-            alert("Failed to update location. Please try again.");
+            showerror("Failed to update location. Please try again.");
           } finally {
             setLoadingLocation(false);
           }
         },
         (error) => {
-          alert(
+          showerror(
             "Location access denied. Please select a saved address or enable location access."
           );
           setLoadingLocation(false);
         }
       );
     } else {
-      alert("Geolocation is not supported by your browser.");
+      showerror("Geolocation is not supported by your browser.");
       setLoadingLocation(false);
     }
   };
@@ -152,15 +153,15 @@ const ConfirmBooking = () => {
 
   const handleConfirmBooking = async() => {
     if (!selectedDate || !selectedTime) {
-      alert("Please select date and time");
+      showwarning("Please select date and time");
       return;
     }
     if(description.trim().length===0){
-        alert("Select description of problem");
+        showwarning("Select description of problem");
         return;
     }
     if (selectedAddress === "custom" && !customAddress.trim()) {
-      alert("Please enter your address");
+      showwarning("Please enter your address");
       return;
     }
 

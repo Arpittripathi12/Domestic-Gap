@@ -1,1 +1,5 @@
-@import "tailwindcss"
+@import "tailwindcss";
+
+.custom-toast-container .Toastify__toast {
+  width: 240px ;
+}
