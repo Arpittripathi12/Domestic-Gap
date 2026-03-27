@@ -3,36 +3,35 @@ const User = require("../models/User.model");
 const sendOtpToEmail = require("../utils/emailService");
 const otpGenerate = require("../utils/otpGenerator");
 const OTP = require("../models/Otp.model");
+const redis=require("../config/redis");
 const bcrypt = require("bcrypt");
 const generateToken = require("../utils/Generatetoken");
 const Booking = require("../models/Booking.model");
 const upload = require("../middlewares/upload");
 const {OAuth2Client}=require("google-auth-library")
 const axios =require("axios");
+
 const sendOtp = async (req, res) => {
 const { email } = req.body;
-
-
-
-  const otp = otpGenerate();
-  let user;
-  let verified;
+  
   try {
     if (email) {
-      user = await User.findOne({ email });
-      if (!user) {
-        verified = await OTP.create({ email, otp });
-
-        sendOtpToEmail(email, otp);
-        return response(res, 200, "OTP send to email", { email });
-      } else {
-        return response(
+     const user = await User.findOne({ email });
+     if(user){
+       return response(
           res,
           300,
           "Email already registered Please Login to Continue",
           { email }
         );
-      }
+     }
+     const otp = otpGenerate();
+     await redis.set(`otp:${email}`,otp,"EX",300);
+     await sendOtpToEmail(email, otp);
+
+      return response(res, 200, "OTP sent to email", { email });
+
+      
     }
   } catch (error) {
     console.error(error);
@@ -42,42 +41,42 @@ const { email } = req.body;
 
 const verifyOtp = async (req, res) => {
   const { password, firstName, lastName, email, otp, role } = req.body;
-  let user;
-  let toverify;
   try {
-    if (email) {
-      toverify = await OTP.findOne({ email });
+    const storedOtp = await redis.get(`otp:${email}`);
+    if (!storedOtp) {
+      return response(res, 400, "OTP expired or not found");
+    }
 
-      if (!toverify) {
-        return response(res, 404, "User not found");
-      }
-      if (toverify.otp === otp) {
-        // Save User details to database
-        const saltround = 10;
-        const hashedPassword = await bcrypt.hash(password, saltround);
-        user = await User.create({
+    if (storedOtp !== otp) {
+      return response(res, 401, "Incorrect OTP");
+    }
+
+     await redis.del(`otp:${email}`);
+
+      const saltround = 10;
+      const hashedPassword = await bcrypt.hash(password, saltround);
+
+       const user = await User.create({
           email: email,
           firstName: firstName,
           lastName: lastName || "",
           password: hashedPassword,
-          role: role,
+          role,
           authProvider:{
             local:true,
           }
         });
-        // generate jwt token
+    
         const token = generateToken(user._id);
        res.cookie("auth_token", token, {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",      // must be true in production (HTTPS)
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // cross-site cookies
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-})
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",      // must be true in production (HTTPS)
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // cross-site cookies
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        })
         return response(res, 200, "Verified-Successfully", { token, user });
-      } else {
-        return response(res, 401, "Incorrect Otp");
-      }
-    }
+      
+    
   } catch (error) {
     console.error(error);
     return response(res, 500, "Internal Server Error");
@@ -196,41 +195,45 @@ const updateProfile = async (req, res) => {
 
 const login = async (req, res) => {
   const { email, password } = req.body;
-  let user;
-  if (email && password) {
+  
+  
     try {
-      user = await User.findOne({ email });
+      const user = await User.findOne({ email });
 
       if (!user) {
         return response(res, 401, "Email does not exist");
       }
+
       if(user.authProvider.local===false){
         user.set('authProvider.local',true);
         await user.save();
       }
       const match = await bcrypt.compare(password, user.password);
+       if (!match) {
+        return response(res, 402, "Password is Incorrect");
+        }
 
-      if (match) {
+      
         const token = generateToken(user._id);
+        await redis.set(`session:${user._id}`,token,"EX",7*24*60*60);
+        console.log("SUCCESSFULLY USED REDIS");
         res.cookie("auth_token", token, {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",      // must be true in production (HTTPS)
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // cross-site cookies
-            maxAge: 7 * 24 * 60 * 60 * 1000,
-})
-        return response(res, 200, "Login Successfull", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",      // must be true in production (HTTPS)
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // cross-site cookies
+                  maxAge: 7 * 24 * 60 * 60 * 1000,
+       })
+       return response(res, 200, "Login Successfull", {
           role: user.role,
           user,
         });
-      }
-      return response(res, 402, "Password is Incorrect", { email });
+      
     } catch (error) {
       console.error(error);
       return response(res, 500, "Server Error During Login");
     }
-  } else {
-    return response(res, 500, "Email and Password is Required");
-  }
+ 
+  
 };
 
 const updateCurrentLocation = async (req, res) => {
@@ -276,9 +279,34 @@ res.cookie("auth_token", "", {
 };
 
 const globaluser = async (req, res) => {
-  return response(res, 200, "User fetched successfully", { user: req.user });
-};
+  const userId = req.user._id;
+  const cacheKey = `user:${userId}`;
 
+  const cachedUser = await redis.get(cacheKey);
+
+  if (cachedUser) {
+    console.log("🔥 USER CACHE HIT");
+
+    return response(
+      res,
+      200,
+      "User fetched (cache)",
+      { user: JSON.parse(cachedUser) }
+    );
+  }
+
+  console.log("❌ USER CACHE MISS");
+
+  const user = await User.findById(userId);
+
+  if (!user) {
+    return response(res, 404, "User not found");
+  }
+
+  await redis.set(cacheKey, JSON.stringify(user), "EX", 300);
+
+  return response(res, 200, "User fetched successfully", { user });
+};
 
 const getMyBookings = async (req, res) => {
   try {
