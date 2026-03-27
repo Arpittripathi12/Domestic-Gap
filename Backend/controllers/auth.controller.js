@@ -71,6 +71,7 @@ const verifyOtp = async (req, res) => {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",      // must be true in production (HTTPS)
   sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // cross-site cookies
+    maxAge: 7 * 24 * 60 * 60 * 1000,
 })
         return response(res, 200, "Verified-Successfully", { token, user });
       } else {
@@ -182,6 +183,7 @@ const updateProfile = async (req, res) => {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",      // must be true in production (HTTPS)
   sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // cross-site cookies
+        maxAge: 7 * 24 * 60 * 60 * 1000,
 })
     await user.save();
 
@@ -214,6 +216,7 @@ const login = async (req, res) => {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",      // must be true in production (HTTPS)
   sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // cross-site cookies
+            maxAge: 7 * 24 * 60 * 60 * 1000,
 })
         return response(res, 200, "Login Successfull", {
           role: user.role,
@@ -411,12 +414,14 @@ const googleSignIn=async(req,res)=>{
     let user =await User.findOne({email});
     if(user){
       console.log("EXISTING USER LOGGING IN VIA GOOGLE SIGN IN",user);  
-      const token=generateToken(user._id);
-      res.cookie("auth_token",token,{
-        secure:process.env.NODE_ENV==="production",
-        httpOnly:true,
-        sameSite:process.env.NODE_ENV==="production" ? "none" : "lax",
-      });
+        const token=generateToken(user._id);
+        res.cookie("auth_token",token,{
+          secure:process.env.NODE_ENV==="production",
+          httpOnly:true,
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+
+          sameSite:process.env.NODE_ENV==="production" ? "none" : "lax",
+        });
      console.log("TOKEN",token);
 
       if(user.authProvider?.google===false){
@@ -453,6 +458,7 @@ const googleSignIn=async(req,res)=>{
       secure:process.env.NODE_ENV==="production",
       httpOnly:true,
       sameSite:process.env.NODE_ENV==="production" ? "none" : "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
     })
     return response(res,201,"Signup successfull",user);
   } catch (error) {
