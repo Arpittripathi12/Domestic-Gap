@@ -8,6 +8,7 @@ const cookieparser=require("cookie-parser")
 const authRoute=require("./routes/authRoute.js")
 const ProviderRoute=require("./routes/ProviderRoute.js")
 const BookingRoute=require("./routes/BookingRoute.js")
+const PaymentRoute=require("./routes/paymentroute.js")
 const http=require("http");
 const { Server } = require("socket.io");
 const cors=require("cors")
@@ -46,6 +47,7 @@ run();
 app.use("/api/auth",authRoute);
 app.use("/api/provider",ProviderRoute);
 app.use("/api/booking",BookingRoute);
+app.use("/api/payment",PaymentRoute);
 
 const PORT = process.env.PORT || 8000;
 

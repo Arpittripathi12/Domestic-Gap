@@ -93,7 +93,7 @@ const ConfirmBooking = () => {
   }, [selectedAddress]);
   const totalAmount = worker.price;
   const platformFee = 50;
-  const GST = ((totalAmount + platformFee) * 18) / 100;
+  const GST = (totalAmount + platformFee) * 0.18 ;
   const finalAmount = (totalAmount + platformFee + GST).toFixed(2);
 
 
@@ -148,53 +148,97 @@ const ConfirmBooking = () => {
 
 
 
+const loadScript = (src) => {
+  return new Promise((resolve) => {
+    const script = document.createElement("script");
+    script.src = src;
+
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+
+    document.body.appendChild(script);
+  });
+};
 
 
+const handleConfirmBooking = async () => {
 
-  const handleConfirmBooking = async() => {
-    if (!selectedDate || !selectedTime) {
-      showwarning("Please select date and time");
+  if (!selectedDate || !selectedTime) {
+    showwarning("Please select date and time");
+    return;
+  }
+
+  if (description.trim().length === 0) {
+    showwarning("Select description of problem");
+    return;
+  }
+
+  if (selectedAddress === "custom" && !customAddress.trim()) {
+    showwarning("Please enter your address");
+    return;
+  }
+
+  try {
+
+    const sdkLoaded = await loadScript(
+      "https://checkout.razorpay.com/v1/checkout.js"
+    );
+   
+    if (!sdkLoaded) {
+      alert("Razorpay SDK failed");
       return;
     }
-    if(description.trim().length===0){
-        showwarning("Select description of problem");
-        return;
-    }
-    if (selectedAddress === "custom" && !customAddress.trim()) {
-      showwarning("Please enter your address");
-      return;
-    }
-    try {
-      const res=await axiosInstance.post("/api/payment/create-order",{
-        
-      })
-    } catch (error) {
-      
-    }
+   
+    const response = await axiosInstance.post(
+      "/api/payment/create-order",
+      {
+        amount: finalAmount,
+        receiptId: 'receipt_001'
+      }
+    );
 
+      console.log("Order creation response:", response);
+    const order = response.data.data;
 
-    try {
-      console.log(customAddress);
-      const res=await axiosInstance.post("/api/booking/confirm-booking",{
-        provider:worker,
-        jobDescription:description,
-        scheduledDate:selectedDate,
-        scheduledTime:selectedTime,
-        serviceAddress:selectedAddress==="current"?CurrentLocation:customAddress,
-        paymentMethod:paymentMode,
-        finalPrice:finalAmount
-        
-      })
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: order.amount,
+      currency: order.currency,
+      order_id: order.id,
 
-      console.log("Reponse From Booking",res);
-      setShowSuccess(true);
-    } catch (error) {
-       console.log("Something went wrong")
+      name: "Domestic-Gap",
 
-    }
-    // Show success popup
-    
-  };
+      handler: async function () {
+
+        await axiosInstance.post(
+          "/api/booking/confirm-booking",
+          {
+            provider: worker,
+            jobDescription: description,
+            scheduledDate: selectedDate,
+            scheduledTime: selectedTime,
+            serviceAddress:
+              selectedAddress === "current"
+                ? CurrentLocation
+                : customAddress,
+
+            paymentMethod: paymentMode,
+            finalPrice: finalAmount
+          }
+        );
+
+        setShowSuccess(true);
+      }
+    };
+
+    const rzp = new window.Razorpay(options);
+
+    rzp.open();
+
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   const handleSuccessClose = () => {
     setShowSuccess(false);

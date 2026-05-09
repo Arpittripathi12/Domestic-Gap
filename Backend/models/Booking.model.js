@@ -17,7 +17,7 @@ const BookingSchema = new mongoose.Schema(
     // 🔹 WHAT (replaces Service model)
     category: {
       type: String,
-      enum: ["Plumbing", "Electrical", "Cleaning", "Carpenter", "Painting", "other"],
+      enum: ["Plumbing", "Electrical", "Cleaning", "Carpenter", "Painting","AC and Appliance Mechanic", "other"],
       required: true,
     },
 
