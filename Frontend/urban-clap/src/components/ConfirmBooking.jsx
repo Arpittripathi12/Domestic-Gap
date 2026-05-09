@@ -164,6 +164,14 @@ const ConfirmBooking = () => {
       showwarning("Please enter your address");
       return;
     }
+    try {
+      const res=await axiosInstance.post("/api/payment/create-order",{
+        
+      })
+    } catch (error) {
+      
+    }
+
 
     try {
       console.log(customAddress);
